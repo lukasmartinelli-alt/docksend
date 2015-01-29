@@ -1,4 +1,4 @@
-# Docksend
+# docksend [![Build Status](https://travis-ci.org/lukasmartinelli/docksend.svg)](https://travis-ci.org/lukasmartinelli/docksend)
 
 A common use case with Docker is executing a virtualized process on a directory and capture stdout and mutated files. But because docker images can require
 alot of space and process might take alot of ressource I often times run
