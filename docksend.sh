@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if ! which rsync > /dev/null; then
-  echo "cannot use dockdo without rsync installed!"
+  echo "cannot use docksend without rsync installed!"
   echo "make sure you have rsync installed and in your path"
   exit 2
 fi
@@ -47,7 +47,7 @@ done
 
 # check non option parameters
 if [ "$#" -lt 3 ]; then
-    echo "usage: ./dockdo.sh [-v docker_volume] [-i ssh_identity_file] [user@]hostname docker_image [command]"
+    echo "usage: ./docksend.sh [-v docker_volume] [-i ssh_identity_file] [user@]hostname docker_image [command]"
     exit 1
 fi
 
