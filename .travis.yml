@@ -1,8 +1,5 @@
-language: python
+language: haskell
 ghc: 7.8
-python:
-  - "2.7"
-before_install:
-  - cabal update
+install:
   - cabal install shellcheck
 script: shellcheck dockdo.sh
