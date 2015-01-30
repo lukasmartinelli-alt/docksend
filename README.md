@@ -1,7 +1,7 @@
-# docksend [![Build Status](https://travis-ci.org/lukasmartinelli/docksend.svg)](https://travis-ci.org/lukasmartinelli/docksend)
+# docksend.sh [![Build Status](https://travis-ci.org/lukasmartinelli/docksend.svg)](https://travis-ci.org/lukasmartinelli/docksend)
 
 A common use case with Docker is executing a virtualized process on a directory and capture stdout and mutated files.
-`docksend.sh` is a quick and dirty solution for doing that remotely via SSH without setting up secure Docker Remote API access.
+`docksend.sh` is a quick and dirty solution for doing that remotely via SSH without setting up Docker Remote API access.
 
 `docksend.sh` is a 100 line bash script which let's you send docker commands
 to a remote Docker host and capture the output and modified files:
@@ -38,7 +38,7 @@ usage: ./dockdo.sh [-v docker_volume] [user@]hostname docker_image [command]
 ### Options
 
 - `-v`: bind a local directory to a docker volume (default: `$(pwd):/root`)
-- `-d`: sync local directory to specific folder on remote machine (default: temp dir that is deleted afterwards)
+- `-d`: sync local directory to specific folder on remote machine (default: temp directory that is deleted afterwards)
 - `-i`: ssh key used for connection
 - `-p`: pull docker image silently before running command (no cluttered stdout)
 
@@ -50,13 +50,13 @@ env variable (`export VERBOSE=true`).
 ## Create PDF with LaTeX
 
 Create a PDF without installing the full texlive suite locally.
-After telling executing `docksend.sh` you should now have a tex.pdf file in your folder.
+After running `docksend.sh` you should now have a tex.pdf file in your folder.
 
 ```bash
 ./docksend.sh core@104.236.232.214 ontouchstart/texlive-full pdftex tex.tex
 ```
 
-In this example we ommited the `-v` volume binding. This means that `docksend.sh`
+In this example we omited the `-v` volume binding. This means that `docksend.sh`
 will automatically bind the current directory to `/root` and set the working
 directory to `/root` as well.
 
