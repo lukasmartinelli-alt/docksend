@@ -29,6 +29,8 @@ wget https://raw.githubusercontent.com/lukasmartinelli/docksend/master/docksend.
 chmod +x docksend.sh
 ```
 
+Or if you are using Arch install it with `yaourt docksend` which will put `docksend` into `/usr/bin`.
+
 ## Usage
 
 ```
