@@ -9,7 +9,7 @@ fi
 # colorful echo only if verbose env var is set
 print() {
   if [ "$VERBOSE" ]; then
-    tput setaf 3
+    tput setaf 2
     echo "$1"
     tput sgr0
   fi
@@ -35,10 +35,10 @@ while getopts ":i:v:d:w:" opt; do
       IFS=':' read -a DOCKER_VOLUME <<< "$OPTARG";;
     :)
       echo "option -$OPTARG requires an argument." >&2
-      exit 1;;
+      exit 3;;
     \?)
       echo "invalid option: -$OPTARG" >&2
-      exit 1;;
+      exit 4;;
   esac
 done
 
