@@ -15,13 +15,21 @@ print() {
   fi
 }
 
+printusage() {
+  echo "usage: ./docksend.sh [-v docker_volume] [-i ssh_identity_file] [user@]hostname docker_image [command]"
+}
+
 # parse arguments
-while getopts ":i:v:d:" opt; do
+while getopts ":i:v:d:w:" opt; do
   case $opt in
     i)
       IDENTITY_FILE="$OPTARG";;
     d)
       REMOTE_DIR="$OPTARG";;
+    w)
+      WORKING_DIR="$OPTARG";;
+    p)
+      PULL_FIRST=true;;
     v)
       # split by colon into array
       IFS=':' read -a DOCKER_VOLUME <<< "$OPTARG";;
@@ -47,7 +55,7 @@ done
 
 # check non option parameters
 if [ "$#" -lt 3 ]; then
-    echo "usage: ./docksend.sh [-v docker_volume] [-i ssh_identity_file] [user@]hostname docker_image [command]"
+    printusage
     exit 1
 fi
 
@@ -84,6 +92,10 @@ if [ -z "${REMOTE_DIR+x}" ]; then
   print "created tempdir $SSH_HOSTNAME:$REMOTE_DIR for syncing"
 fi
 
+if [ -z "${WORKING_DIR+x}" ]; then
+  WORKING_DIR="$REMOTE_DIR"
+fi
+
 # make sure we never have trailing slashes for rsync dirs
 # because we append them later
 LOCAL_DIR=$(echo "$LOCAL_DIR"|sed 's/\/$//g')
@@ -96,15 +108,28 @@ function deltempdir {
     print "deleted tempdir $SSH_HOSTNAME:$REMOTE_DIR"
   fi
 }
-trap deltempdir EXIT
 
 # sync directory up to server
-print "syncing $LOCAL_DIR up to $SSH_HOSTNAME:$REMOTE_DIR"
-rsync "$RSYNC_FLAGS" --exclude='.git' -e "ssh $SSH_ARGS" "$LOCAL_DIR/" "$SSH_HOSTNAME:$REMOTE_DIR/"
+function syncup {
+  print "syncing $LOCAL_DIR up to $SSH_HOSTNAME:$REMOTE_DIR"
+  rsync "$RSYNC_FLAGS" --exclude='.git' -e "ssh $SSH_ARGS" "$LOCAL_DIR/" "$SSH_HOSTNAME:$REMOTE_DIR/"
+}
 
-# run docker on directory
-ssh $SSH_ARGS "$SSH_HOSTNAME" "docker run -v $REMOTE_DIR:$DOCKER_DIR $DOCKER_IMAGE $DOCKER_COMMAND $DOCKER_ARGS"
+function rundocker {
+  if [ "$PULL_FIRST" ]; then
+    ssh $SSH_ARGS "$SSH_HOSTNAME" "docker pull $DOCKER_IMAGE" > /dev/null
+  fi
+
+  ssh $SSH_ARGS "$SSH_HOSTNAME" "docker run --rm -w $WORKING_DIR -v $REMOTE_DIR:$DOCKER_DIR $DOCKER_IMAGE $DOCKER_COMMAND $DOCKER_ARGS"
+}
 
 # sync changes down
-print "syncing $SSH_HOSTNAME:$REMOTE_DIR down to $LOCAL_DIR"
-rsync "$RSYNC_FLAGS" --exclude='.git' -e "ssh $SSH_ARGS" "$SSH_HOSTNAME:$REMOTE_DIR/" "$LOCAL_DIR/"
+function syncdown {
+  print "syncing $SSH_HOSTNAME:$REMOTE_DIR down to $LOCAL_DIR"
+  rsync "$RSYNC_FLAGS" --exclude='.git' -e "ssh $SSH_ARGS" "$SSH_HOSTNAME:$REMOTE_DIR/" "$LOCAL_DIR/"
+}
+
+trap deltempdir EXIT
+syncup
+rundocker
+syncdown
