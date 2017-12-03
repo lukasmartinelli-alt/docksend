@@ -1,4 +1,6 @@
-# docksend.sh [![Build Status](https://travis-ci.org/lukasmartinelli/docksend.svg)](https://travis-ci.org/lukasmartinelli/docksend)
+# docksend.sh ![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)  [![Build Status](https://travis-ci.org/lukasmartinelli/docksend.svg)](https://travis-ci.org/lukasmartinelli/docksend)
+
+> :warning: This repository is no longer maintained by Lukas Martinelli.
 
 A common use case with Docker is executing a virtualized process on a directory and capture stdout and mutated files.
 `docksend.sh` is a quick and dirty solution for doing that remotely via SSH without setting up Docker Remote API access.
